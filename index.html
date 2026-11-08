@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIU Digital Water Observatory | SDG 6</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ===== Design tokens (dark water theme) ===== */
+:root{
+  --bg:#050b18; --bg2:#0a1628; --card:#0f1f38; --border:#1b3357;
+  --text:#e6f1ff; --muted:#8fa7c7;
+  --cyan:#22e4ff; --blue:#2f7bff; --glow:0 0 24px rgba(34,228,255,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}               /* smooth scrolling for nav */
+body{font-family:'Poppins','Cairo',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+html[lang="ar"] body{font-family:'Cairo','Poppins',sans-serif}
+a{color:inherit;text-decoration:none}
+section{padding:90px 6%}
+.container{max-width:1100px;margin:auto}
+h2{font-size:clamp(1.7rem,4vw,2.4rem);text-align:center;margin-bottom:12px}
+h2 span{color:var(--cyan)}
+.lead{text-align:center;color:var(--muted);max-width:640px;margin:0 auto 48px}
+
+/* ===== Navbar ===== */
+nav{position:fixed;top:0;inset-inline:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  padding:14px 6%;background:rgba(5,11,24,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.logo{font-weight:800;color:var(--cyan)}
+.logo i{margin-inline-end:8px}
+.links{display:flex;gap:22px;align-items:center}
+.links a{color:var(--muted);font-size:.92rem;transition:.2s}
+.links a:hover{color:var(--cyan)}
+.lang-btn{background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:6px 14px;border-radius:30px;
+  cursor:pointer;font:inherit;font-size:.85rem;transition:.2s}
+.lang-btn:hover{background:var(--cyan);color:var(--bg)}
+@media(max-width:640px){.links a{display:none}}
+
+/* ===== Hero ===== */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding-top:100px;
+  background:radial-gradient(circle at 50% 30%,#0d2a52 0%,var(--bg) 65%);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:120px;background:linear-gradient(transparent,var(--bg))}
+.drop{font-size:3.2rem;color:var(--cyan);text-shadow:var(--glow);animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+.hero h1{font-size:clamp(2rem,6vw,3.8rem);font-weight:800;margin:18px 0;
+  background:linear-gradient(90deg,var(--cyan),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:680px;margin:0 auto 34px;font-size:1.1rem}
+.btn{display:inline-block;background:linear-gradient(90deg,var(--cyan),var(--blue));color:#03101f;font-weight:700;
+  padding:14px 34px;border:0;border-radius:40px;cursor:pointer;font:inherit;font-weight:700;transition:.25s;box-shadow:var(--glow)}
+.btn:hover{transform:translateY(-3px);box-shadow:0 0 36px rgba(34,228,255,.6)}
+
+/* ===== Cards ===== */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px;transition:.3s}
+.card:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:var(--glow)}   /* hover effect */
+.card .ico{width:58px;height:58px;border-radius:14px;display:grid;place-items:center;font-size:1.5rem;
+  color:var(--cyan);background:rgba(34,228,255,.08);margin-bottom:18px}
+.card h3{margin-bottom:8px;font-size:1.15rem}
+.card p{color:var(--muted);font-size:.95rem}
+.stat{display:block;color:var(--cyan);font-weight:800;font-size:1.7rem;margin-bottom:6px}
+#problem{background:var(--bg2)}
+
+/* ===== Calculator ===== */
+.calc{max-width:640px;margin:auto;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:36px;text-align:center}
+.calc label{display:block;color:var(--muted);margin-bottom:12px}
+.calc input{width:150px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--bg);
+  color:var(--text);font:inherit;font-size:1.2rem;text-align:center;margin-bottom:18px}
+.calc input:focus{outline:none;border-color:var(--cyan);box-shadow:var(--glow)}
+#result{margin-top:26px;display:none;animation:fade .5s}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}}
+#result .big{font-size:1.15rem}
+#result b{color:var(--cyan)}
+#tip{margin-top:14px;padding:14px;border-radius:12px;background:rgba(47,123,255,.12);border:1px solid var(--blue);color:var(--text)}
+.note{color:var(--muted);font-size:.8rem;margin-top:16px}
+
+/* ===== Report a Leak form ===== */
+.report{max-width:680px;margin:auto;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:36px}
+.field{margin-bottom:20px}
+.field label{display:block;margin-bottom:8px;color:var(--muted);font-size:.9rem}
+.field input[type=text],.field textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text);font:inherit;transition:.2s}
+.field textarea{min-height:120px;resize:vertical}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--cyan);box-shadow:var(--glow)}
+::placeholder{color:#4d6486}
+/* Styled file input: hide the native control, label acts as the button */
+.file-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.file-wrap input[type=file]{display:none}
+.file-btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border:1px dashed var(--cyan);border-radius:12px;
+  color:var(--cyan);cursor:pointer;transition:.25s;margin:0!important}
+.file-btn:hover{background:rgba(34,228,255,.1);box-shadow:var(--glow)}
+#fileName{color:var(--muted);font-size:.85rem;word-break:break-all}
+.report .btn{width:100%;margin-top:6px}
+#success{display:none;text-align:center;padding:22px;border-radius:16px;margin-bottom:24px;
+  background:rgba(34,228,255,.08);border:1px solid var(--cyan);box-shadow:var(--glow);animation:fade .5s}
+#success i{font-size:2.2rem;color:var(--cyan);margin-bottom:8px;display:block}
+
+/* ===== Footer ===== */
+footer{text-align:center;padding:40px 6%;border-top:1px solid var(--border);color:var(--muted);background:var(--bg2)}
+footer p+p{margin-top:6px;color:var(--cyan)}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="logo"><i class="fa-solid fa-droplet"></i><span data-i18n="brand"></span></div>
+  <div class="links">
+    <a href="#problem" data-i18n="nav_problem"></a>
+    <a href="#solutions" data-i18n="nav_solutions"></a>
+    <a href="#calculator" data-i18n="nav_calc"></a>
+    <a href="#report" data-i18n="nav_report"></a>
+    <button class="lang-btn" id="langBtn"><i class="fa-solid fa-language"></i> <span id="langLabel">العربية</span></button>
+  </div>
+</nav>
+
+<!-- 1. Hero -->
+<header class="hero" id="home">
+  <div class="container">
+    <div class="drop"><i class="fa-solid fa-droplet"></i></div>
+    <h1 data-i18n="hero_title"></h1>
+    <p data-i18n="hero_sub"></p>
+    <a href="#solutions" class="btn" data-i18n="hero_cta"></a>
+  </div>
+</header>
+
+<!-- 2. Problem -->
+<section id="problem">
+  <div class="container">
+    <h2 data-i18n="problem_title"></h2>
+    <p class="lead" data-i18n="problem_lead"></p>
+    <div class="grid">
+      <div class="card"><div class="ico"><i class="fa-solid fa-faucet-drip"></i></div>
+        <span class="stat">20–30%</span><h3 data-i18n="p1_t"></h3><p data-i18n="p1_d"></p></div>
+      <div class="card"><div class="ico"><i class="fa-solid fa-brain"></i></div>
+        <span class="stat">76%</span><h3 data-i18n="p2_t"></h3><p data-i18n="p2_d"></p></div>
+      <div class="card"><div class="ico"><i class="fa-solid fa-bottle-water"></i></div>
+        <span class="stat">74%</span><h3 data-i18n="p3_t"></h3><p data-i18n="p3_d"></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Solutions -->
+<section id="solutions">
+  <div class="container">
+    <h2 data-i18n="sol_title"></h2>
+    <p class="lead" data-i18n="sol_lead"></p>
+    <div class="grid">
+      <div class="card"><div class="ico"><i class="fa-solid fa-tower-broadcast"></i></div>
+        <h3 data-i18n="s1_t"></h3><p data-i18n="s1_d"></p></div>
+      <div class="card"><div class="ico"><i class="fa-solid fa-seedling"></i></div>
+        <h3 data-i18n="s2_t"></h3><p data-i18n="s2_d"></p></div>
+      <div class="card"><div class="ico"><i class="fa-solid fa-qrcode"></i></div>
+        <h3 data-i18n="s3_t"></h3><p data-i18n="s3_d"></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Water Gap Calculator -->
+<section id="calculator" style="background:var(--bg2)">
+  <div class="container">
+    <h2 data-i18n="calc_title"></h2>
+    <p class="lead" data-i18n="calc_lead"></p>
+    <div class="calc">
+      <label for="mins" data-i18n="calc_label"></label>
+      <input type="number" id="mins" min="1" max="120" value="10"><br>
+      <button class="btn" id="calcBtn" data-i18n="calc_btn"></button>
+      <div id="result">
+        <p class="big" id="resText"></p>
+        <div id="tip"></div>
+      </div>
+      <p class="note" data-i18n="calc_note"></p>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Report a Leak (Campus Water Watch) -->
+<section id="report">
+  <div class="container">
+    <h2 data-i18n="rep_title"></h2>
+    <p class="lead" data-i18n="rep_lead"></p>
+    <div class="report">
+      <div id="success">
+        <i class="fa-solid fa-circle-check"></i>
+        <p data-i18n="rep_success"></p>
+      </div>
+      <form id="leakForm">
+        <div class="field">
+          <label for="loc" data-i18n="rep_loc"></label>
+          <input type="text" id="loc" required data-i18n-ph="rep_loc_ph">
+        </div>
+        <div class="field">
+          <label for="desc" data-i18n="rep_desc"></label>
+          <textarea id="desc" required data-i18n-ph="rep_desc_ph"></textarea>
+        </div>
+        <div class="field">
+          <label data-i18n="rep_photo"></label>
+          <div class="file-wrap">
+            <label for="photo" class="file-btn"><i class="fa-solid fa-camera"></i><span data-i18n="rep_upload"></span></label>
+            <input type="file" id="photo" accept="image/*">
+            <span id="fileName"></span>
+          </div>
+        </div>
+        <button type="submit" class="btn"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="rep_btn"></span></button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Footer -->
+<footer>
+  <p data-i18n="foot_course"></p>
+  <p data-i18n="foot_team"></p>
+</footer>
+
+<script>
+/* ===== Translations (EN / AR) ===== */
+const T = {
+  en:{
+    brand:"AIU Water Observatory", nav_problem:"The Problem", nav_solutions:"Solutions", nav_calc:"Calculator",
+    hero_title:"AIU Smart & Green Water Initiative",
+    hero_sub:"Empowering our campus to achieve SDG 6 through IoT, Green Infrastructure, and Behavioral Change.",
+    hero_cta:"Discover the Solutions",
+    problem_title:"The <span>Problem</span>", problem_lead:"Three hidden challenges behind water waste on campus.",
+    p1_t:"Infrastructure Leaks", p1_d:"20-30% of treated water is lost due to aging pipes.",
+    p2_t:"The Awareness Gap", p2_d:"Students underestimate their daily water consumption by 76%.",
+    p3_t:"Plastic Pollution", p3_d:"74% of the campus community relies on single-use plastic bottles.",
+    sol_title:"Our Innovative <span>Solutions</span>", sol_lead:"Technology, nature, and behavior working together.",
+    s1_t:"Smart IoT Grids", s1_d:"Deploying solar-powered sensors and LoRaWAN for real-time leak detection.",
+    s2_t:"Green Campus Infrastructure", s2_d:"Rainwater harvesting, smart rain barrels, and drought-resistant xeriscaping.",
+    s3_t:"Digital Gamification", s3_d:"QR-code observatories on water dispensers to encourage reusable bottles.",
+    calc_title:"The Water <span>Gap Calculator</span>", calc_lead:"Find out how much water your shower really uses.",
+    calc_label:"Your estimated shower time (minutes)", calc_btn:"Calculate",
+    calc_note:"Assumes a showerhead flow of 12 liters/min.",
+    res:(x,y)=>`You think you used <b>${x}</b> liters, but you actually used <b>${y}</b> liters! (assuming 12 liters/min)`,
+    tip_long:(s)=>`💡 Try a 4-minute shower: you would use only 48 liters and save <b>${s}</b> liters every shower!`,
+    tip_ok:"🌟 Great job! Your shower is already at or below the recommended 4 minutes. Keep it up!",
+    err:"Please enter a valid number of minutes.",
+    nav_report:"Report a Leak",
+    rep_title:"Spot a leak? <span>Report it!</span>",
+    rep_lead:"Campus Water Watch: report broken faucets or leaking pipes directly to AIU Facilities Management so they can be fixed fast.",
+    rep_loc:"Location", rep_loc_ph:"e.g., Building A, 2nd Floor Restroom",
+    rep_desc:"Issue Description", rep_desc_ph:"Describe the problem (dripping tap, burst pipe, running toilet...)",
+    rep_photo:"Photo (optional)", rep_upload:"Upload Photo", rep_btn:"Submit Report", rep_nofile:"No photo selected",
+    rep_success:"Thank you! Your report has been successfully sent to the AIU Administration.",
+    rep_success_photo:"Thank you! Your report with the photo has been successfully sent to the AIU Administration.",
+    foot_course:"Course: Climate Change & Sustainability (GEO217) - Alamein International University.",
+    foot_team:"Designed by Team [Your Team Number]"
+  },
+  ar:{
+    brand:"مرصد المياه - AIU", nav_problem:"المشكلة", nav_solutions:"الحلول", nav_calc:"الحاسبة",
+    hero_title:"مبادرة AIU الذكية والخضراء للمياه",
+    hero_sub:"نمكّن جامعتنا من تحقيق الهدف السادس للتنمية المستدامة عبر إنترنت الأشياء والبنية التحتية الخضراء وتغيير السلوك.",
+    hero_cta:"اكتشف الحلول",
+    problem_title:"<span>المشكلة</span>", problem_lead:"ثلاثة تحديات خفية وراء هدر المياه في الحرم الجامعي.",
+    p1_t:"تسريبات البنية التحتية", p1_d:"من 20 إلى 30% من المياه المعالجة تضيع بسبب تقادم الأنابيب.",
+    p2_t:"فجوة الوعي", p2_d:"الطلاب يقللون من تقدير استهلاكهم اليومي للمياه بنسبة 76%.",
+    p3_t:"التلوث البلاستيكي", p3_d:"74% من مجتمع الجامعة يعتمد على زجاجات البلاستيك أحادية الاستخدام.",
+    sol_title:"<span>حلولنا</span> المبتكرة", sol_lead:"التكنولوجيا والطبيعة والسلوك يعملون معًا.",
+    s1_t:"شبكات إنترنت الأشياء الذكية", s1_d:"تركيب حساسات تعمل بالطاقة الشمسية وتقنية LoRaWAN لاكتشاف التسريبات لحظيًا.",
+    s2_t:"بنية تحتية خضراء للحرم الجامعي", s2_d:"حصاد مياه الأمطار، وبراميل مطر ذكية، وتنسيق حدائق مقاوم للجفاف (Xeriscaping).",
+    s3_t:"التحفيز الرقمي", s3_d:"مراصد برموز QR على موزعات المياه لتشجيع استخدام الزجاجات القابلة لإعادة الاستخدام.",
+    calc_title:"<span>حاسبة فجوة المياه</span>", calc_lead:"اعرف كم مياه يستهلك دشك فعلًا.",
+    calc_label:"الوقت التقديري لاستحمامك (بالدقائق)", calc_btn:"احسب",
+    calc_note:"بافتراض تدفق دش 12 لتر في الدقيقة.",
+    res:(x,y)=>`أنت تعتقد أنك استخدمت <b>${x}</b> لتر، لكنك في الحقيقة استخدمت <b>${y}</b> لتر! (بافتراض 12 لتر/دقيقة)`,
+    tip_long:(s)=>`💡 جرّب دش 4 دقائق: هتستهلك 48 لتر فقط وتوفر <b>${s}</b> لتر في كل مرة!`,
+    tip_ok:"🌟 ممتاز! دشك بالفعل 4 دقائق أو أقل. كمّل كده!",
+    err:"من فضلك أدخل عدد دقائق صحيح.",
+    nav_report:"أبلغ عن تسريب",
+    rep_title:"شفت تسريب؟ <span>بلّغ عنه!</span>",
+    rep_lead:"مراقبة مياه الحرم الجامعي: بلّغ عن الحنفيات المكسورة أو الأنابيب المتسربة مباشرة لإدارة المرافق في AIU علشان تتصلح بسرعة.",
+    rep_loc:"الموقع", rep_loc_ph:"مثال: مبنى A، حمام الدور الثاني",
+    rep_desc:"وصف المشكلة", rep_desc_ph:"اوصف المشكلة (حنفية بتنقط، ماسورة مكسورة، سيفون بيسرّب...)",
+    rep_photo:"صورة (اختياري)", rep_upload:"رفع صورة", rep_btn:"إرسال البلاغ", rep_nofile:"لم يتم اختيار صورة",
+    rep_success:"شكرًا لك! تم إرسال بلاغك بنجاح إلى إدارة AIU.",
+    rep_success_photo:"شكرًا لك! تم إرسال بلاغك مع الصورة بنجاح إلى إدارة AIU.",
+    foot_course:"المقرر: التغير المناخي والاستدامة (GEO217) - جامعة العلمين الدولية.",
+    foot_team:"تصميم الفريق [رقم فريقك]"
+  }
+};
+
+let lang = localStorage.getItem('lang') || 'en';
+
+/* Apply the selected language to every [data-i18n] element */
+function applyLang(){
+  const html = document.documentElement;
+  html.lang = lang;
+  html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.innerHTML = T[lang][el.dataset.i18n];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = T[lang][el.dataset.iPh || el.getAttribute('data-i18n-ph')]; });
+  updateFileName();
+  document.getElementById('langLabel').textContent = lang === 'ar' ? 'English' : 'العربية';
+  document.title = T[lang].hero_title;
+  if (lastMins !== null) showResult();   // re-render result in new language
+}
+
+/* ===== Water Gap Calculator ===== */
+const LITERS_PER_MIN = 12;
+const UNDERESTIMATE = 0.76;   // students underestimate by 76% -> perceived = 24% of actual
+let lastMins = null;
+
+function showResult(){
+  const actual = Math.round(lastMins * LITERS_PER_MIN);
+  const perceived = Math.round(actual * (1 - UNDERESTIMATE));
+  document.getElementById('resText').innerHTML = T[lang].res(perceived, actual);
+  const saved = Math.round((lastMins - 4) * LITERS_PER_MIN);
+  document.getElementById('tip').innerHTML = lastMins > 4 ? T[lang].tip_long(saved) : T[lang].tip_ok;
+  document.getElementById('result').style.display = 'block';
+}
+
+document.getElementById('calcBtn').addEventListener('click', ()=>{
+  const v = parseFloat(document.getElementById('mins').value);
+  if (isNaN(v) || v <= 0){ alert(T[lang].err); return; }
+  lastMins = v;
+  showResult();
+});
+
+/* ===== Report a Leak form ===== */
+const photoInput = document.getElementById('photo');
+function updateFileName(){
+  const f = photoInput.files[0];
+  document.getElementById('fileName').textContent = f ? f.name : T[lang].rep_nofile;
+}
+photoInput.addEventListener('change', updateFileName);
+
+let successTimer;
+document.getElementById('leakForm').addEventListener('submit', (e)=>{
+  e.preventDefault();                                   // stop real submission
+  const hasPhoto = photoInput.files.length > 0;
+  const box = document.getElementById('success');
+  box.querySelector('p').textContent = hasPhoto ? T[lang].rep_success_photo : T[lang].rep_success;
+  box.removeAttribute('data-i18n');
+  box.style.display = 'block';
+  e.target.reset();                                     // clear all fields
+  updateFileName();
+  clearTimeout(successTimer);
+  successTimer = setTimeout(()=>{ box.style.display = 'none'; }, 8000);
+});
+
+/* Language toggle */
+document.getElementById('langBtn').addEventListener('click', ()=>{
+  lang = lang === 'en' ? 'ar' : 'en';
+  try{ localStorage.setItem('lang', lang); }catch(e){}
+  applyLang();
+});
+
+applyLang();
+</script>
+</body>
+</html>
